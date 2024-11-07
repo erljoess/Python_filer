@@ -102,7 +102,7 @@ Sirdal_data, Sauda_data = cmd.convert_Sirdal_Sauda_data()              #Format: 
 cut_date = Sola_data[0][2]
 cut_hour = Sola_data[0][3]
 
-print(Time_data[:2], Sola_data[0], Sirdal_data[0], Sauda_data[0])
+#print(Time_data[:2], Sola_data[0], Sirdal_data[0], Sauda_data[0])
 kutt = 0 #Vil telle kor mange linjer som skal kuttast.
 for linje in Sola_data:
     if linje[2] < cut_date:
@@ -213,16 +213,20 @@ for i, linje in enumerate(Time_data):           #Går gjennom kvar linje i Time_
         if i >= 29:                              #Igjen; startar berekninga av gjennomsnittet etter 30 linjer.
             Time_temp_snitt.append([linje[0], linje[1], linje[2], linje[3], linje[4], linje[5], float(f"{sum(Time_temp_total)/30:.2f}")]) #Her måtte eg bruke "float" for å ikkje få string?!.
 
-Time_underveis =[]
+#Making two new lists: Time_bar_list excluding the items with -1 as barometic pressure, and
+#Time_data_lik_Sola_tider, with data for each hour, like the other lists.
+#Then, making a new list for Sola_tider_lik_Time_tider, to have the same starting point for part e) Finding temperature differences, mean, min and max.
+
+Time_bar_list =[]
 Time_data_lik_Sola_tider = []
 for linje in Time_data:
     if linje[6] != -1:
-        Time_underveis.append(linje)
-for linje in Time_underveis:
+        Time_bar_list.append(linje)
+for linje in Time_bar_list:
     if linje[4] == 0:
         Time_data_lik_Sola_tider.append(linje)
-Time_underveis = None
-#print(Time_data_lik_Sola_tider[:2])
+#print(Time_bar_list[:3])
+#print(Time_data_lik_Sola_tider[:2], Time_data_lik_Sola_tider[-1:])
 
 Sola_tider_lik_Time_tider = Sola_data
 cut_date = Time_data[0][2]
@@ -240,6 +244,7 @@ for linje in Sola_data:
 Sola_tider_lik_Time_tider = Sola_tider_lik_Time_tider[kutt + 1:]
 #print(Time_data_lik_Sola_tider[:1], Sola_tider_lik_Time_tider[:1], len(Sola_tider_lik_Time_tider), len(Time_data_lik_Sola_tider))
 
+#Calculating the differences for each item, and printing the results:
 antall = 0
 forskjell = 0
 forskjell_total = 0
@@ -247,7 +252,7 @@ storst_forskjell = 0
 storst_forskjell_tid = []
 minst_forskjell = 1000
 minst_forskjell_tid = []
-for linje, element in enumerate(Time_data_lik_Sola_tider):
+for linje, element in enumerate(Time_data_lik_Sola_tider): #linje is line number, required to get the correct line from each list. element iterates through each line in each data set.
     forskjell = Sola_tider_lik_Time_tider[linje][5] - Time_data_lik_Sola_tider[linje][8]
     antall += 1
     forskjell_total += forskjell
@@ -262,25 +267,24 @@ print(f"Average deviation in temperature between met.no and time.no was {abs(sni
 print(f"The largest difference was at {storst_forskjell_tid[0]}.{storst_forskjell_tid[1]:02d}.{storst_forskjell_tid[2]}, {storst_forskjell_tid[3]:02d}:00, with {storst_forskjell:.2f} degrees.")
 print(f"The smallest difference was at {minst_forskjell_tid[0]}.{minst_forskjell_tid[1]:02d}.{minst_forskjell_tid[2]}, {minst_forskjell_tid[3]:02d}:00, with {minst_forskjell:.2f} degrees.")
 
-    # Hentar ut tid og temperatur frå listene, og konverterer tid til datetime-objekt for å ha felles x-verdiar:: 
-Sola_tider = [datetime.datetime(d[0], d[1], d[2], d[3], d[4]) for d in Sola_data]
-Sola_temps = [d[5] for d in Sola_data]
-Sirdal_tider = [datetime.datetime(d[0], d[1], d[2], d[3], d[4]) for d in Sirdal_data]
-Sirdal_temps = [d[5] for d in Sirdal_data]
-Sirdal_press = [d[6] for d in Sirdal_data]
-Sauda_tider = [datetime.datetime(d[0], d[1], d[2], d[3], d[4]) for d in Sauda_data]
-Sauda_temps = [d[5] for d in Sauda_data]
-Sauda_press = [d[6] for d in Sauda_data]
+    # Fetching time/temperature from the lists. Converting time to datetime-object for common x values.
+    # Sola_tider also used for Sirdal and Sauda, as they are the same.
+Sola_tider = [datetime.datetime(linje[0], linje[1], linje[2], linje[3], linje[4]) for linje in Sola_data]
+Sola_temps = [linje[5] for linje in Sola_data]
+Sirdal_temps = [linje[5] for linje in Sirdal_data]
+Sirdal_press = [linje[6] for linje in Sirdal_data]
+Sauda_temps = [linje[5] for linje in Sauda_data]
+Sauda_press = [linje[6] for linje in Sauda_data]
 #print(Sauda_data[:1], Sirdal_data[:1])
-Time_tider = [datetime.datetime(d[0], d[1], d[2], d[3], d[4]) for d in Time_data]
-Time_temps = [d[8] for d in Time_data]
-Time_temp_avg = [d[6] for d in Time_temp_snitt]  
-Time_temp_avg_tider = [datetime.datetime(d[0], d[1], d[2], d[3], d[4]) for d in Time_temp_snitt]
+Time_tider = [datetime.datetime(linje[0], linje[1], linje[2], linje[3], linje[4]) for linje in Time_data]
+Time_temps = [linje[8] for linje in Time_data]
+Time_temp_avg = [linje[6] for linje in Time_temp_snitt]  
+Time_temp_avg_tider = [datetime.datetime(linje[0], linje[1], linje[2], linje[3], linje[4]) for linje in Time_temp_snitt]
 #Time_temp_drop = Time_temp_drop[2:4]
-Time_temp_drop_tider = [datetime.datetime(d[0], d[1], d[2], d[3], d[4]) for d in Time_temp_drop]
-Time_temp_drop = [d[6] for d in Time_temp_drop]
-Sola_temp_drop_tider = [datetime.datetime(d[0], d[1], d[2], d[3], d[4]) for d in Sola_temp_drop]
-Sola_temp_drop = [d[5] for d in Sola_temp_drop]
+Time_temp_drop_tider = [datetime.datetime(linje[0], linje[1], linje[2], linje[3], linje[4]) for linje in Time_temp_drop]
+Time_temp_drop = [linje[6] for linje in Time_temp_drop]
+Sola_temp_drop_tider = [datetime.datetime(linje[0], linje[1], linje[2], linje[3], linje[4]) for linje in Sola_temp_drop]
+Sola_temp_drop = [linje[5] for linje in Sola_temp_drop]
 #print(Sola_temp_drop_tider)
 #print(Sola_temp_drop)
     #Lagar ein funksjon for å plotte data:
@@ -291,8 +295,8 @@ def plot_graphs():
     ax1.plot(Time_tider, Time_temps, color="blue", label="Temperature (Time)")
     ax1.plot(Time_temp_avg_tider, Time_temp_avg, color="orange", linewidth=0.5, label="Average temperature (Time)")
     ax1.plot(Sola_tider, Sola_temps, color="green", label="Temperature (MET)")
-    ax1.plot(Sauda_tider, Sauda_temps, color="gray", label="Temperature (Sauda)")
-    ax1.plot(Sirdal_tider, Sirdal_temps, color="red", label="Temperature (Sirdal)")
+    ax1.plot(Sola_tider, Sauda_temps, color="gray", label="Temperature (Sauda)")
+    ax1.plot(Sola_tider, Sirdal_temps, color="red", label="Temperature (Sirdal)")
     #Plotting av to og to temperaturar, blir mange slices:
     ax1.plot(Time_temp_drop_tider[:2], Time_temp_drop[:2], color="violet", label='Temp drop from max one day to min next day, time data')
     ax1.plot(Time_temp_drop_tider[-2:], Time_temp_drop[-2:], color="violet")
@@ -310,8 +314,8 @@ def plot_graphs():
     ax2.plot(date_met, pressure, color="red", label ="Absolute Pressure MET")
     ax2.plot(date_met_2, abs_pressure, color="blue", label ="Absolute Pressure")
     ax2.plot(date_time, barometer, color="black", label ="Barometer")
-    ax2.plot(Sauda_tider, Sauda_press, color="green", label = "Sauda Pressure")
-    ax2.plot(Sirdal_tider, Sirdal_press, color="orange", label = "Sirdal Pressure")
+    ax2.plot(Sola_tider, Sauda_press, color="green", label = "Sauda Pressure")
+    ax2.plot(Sola_tider, Sirdal_press, color="orange", label = "Sirdal Pressure")
 
     ax2.xaxis.set_major_formatter(mdates.DateFormatter('%d-%m %H:%M'))  
     ax2.set_xlabel('Dates')
