@@ -31,10 +31,10 @@ with open("met.csv.txt","r") as sola_temp:
             continue
         
         sola_date_pressure.append((date_time, pressure_sola))
-            #print(sola_date_pressure)
+#print(sola_date_pressure[:2])
 
 date_press = np.array(sola_date_pressure)
-#print(sola_date_pressure[0])
+#print(date_press[:2])
 date_met = date_press[:,0]
 pressure = date_press[:,1]
 
@@ -81,9 +81,11 @@ with open("time.csv.txt","r") as met_pressure:
         data.append((date_comp, barometer_adj)) 
         #print(date_comp, barometer_adj)
 
+#print(data_abs_press[:1])
+#print(data[:1])
 date_barometer = np.array(data)
 date_time = date_barometer[:,0]
-barometer = date_barometer[:,1]  
+barometer = date_barometer[:,1]
 
     #LAGAR DATA OG LISTER FOR TEMPERATUR:
 Sola_data = []
@@ -100,8 +102,8 @@ Sirdal_data, Sauda_data = cmd.convert_Sirdal_Sauda_data()              #Format: 
 cut_date = Sola_data[0][2]
 cut_hour = Sola_data[0][3]
 
-#print(Time_data[:2], Sola_data[0], Sirdal_data[0], Sauda_data[0])
-kutt = 0
+print(Time_data[:2], Sola_data[0], Sirdal_data[0], Sauda_data[0])
+kutt = 0 #Vil telle kor mange linjer som skal kuttast.
 for linje in Sola_data:
     if linje[2] < cut_date:
         kutt += 1
@@ -165,18 +167,19 @@ for i in range((len(Time_warmest))*2): # Gjer klart til plotting
         Time_temp_drop.append(Time_warmest[(int(i/2))])
     else:
         Time_temp_drop.append(Time_coldest[(int((i-1)/2))])
-        
+del Time_coldest, Time_warmest, Time_temp_min, Time_temp_max
+
 Sola_temp_min = []
 Sola_temp_max = []
 Sola_coldest = []
 Sola_warmest = []
 
 for linje in Sola_data:
-    if not Sola_temp_min or Sola_temp_min[2] != linje[2]:
+    if not Sola_temp_min or Sola_temp_min[2] != linje[2]:              # Sjekkar om Sola_temp_min finst, før sjekk av evt nytt døgn, i så fall blir nytt døgn lagt til (under).
         if len(Sola_temp_min) > 1:
-            Sola_coldest.append(Sola_temp_min)                         # Legg til Sola_temp_min i Sola_coldest[], altså det kaldaste i Sola_temp[] siste døgn.
+            Sola_coldest.append(Sola_temp_min)                         # Legg til Sola_temp_min i Sola_coldest[], altså det kaldaste i Sola_temp[] siste døgn - viss Sola_temp_min finst.
         if len(Sola_temp_max) > 1:
-            Sola_warmest.append(Sola_temp_max)                         # Legg til Sola_temp_max i Sola_warmest[], altså det varmaste i Sola_temp[] siste døgn.
+            Sola_warmest.append(Sola_temp_max)                         # Legg til Sola_temp_max i Sola_warmest[], altså det varmaste i Sola_temp[] siste døgn - viss Sola_temp_min finst.
         Sola_temp_min = [linje[0], linje[1], linje[2], linje [3], linje[4], linje[5]]   # Set Sola_temp_min til første temp i nytt døgn.
         Sola_temp_max = [linje[0], linje[1], linje[2], linje [3], linje[4], linje[5]]   # Set Sola_temp_max til første temp i nytt døgn.
     if Sola_temp_min[5] > linje[5]:                                     #Viss registrert temperatur er lågare enn Sola_temp_min, oppdater Sola_temp_min.
@@ -255,9 +258,9 @@ for linje, element in enumerate(Time_data_lik_Sola_tider):
         minst_forskjell_tid = Sola_tider_lik_Time_tider[linje][:4]
         minst_forskjell = abs(forskjell)
 snitt_forskjell = forskjell_total / antall
-print(f"Average deviation in temperature between met and time was {abs(snitt_forskjell):.2f}.")
-print(f"The largest difference was the {storst_forskjell_tid[2]}th, at {storst_forskjell_tid[3]:02d}:00, with {storst_forskjell:.2f} degrees.")
-print(f"The smallest difference was the {minst_forskjell_tid[2]}th, at {minst_forskjell_tid[3]:02d}:00, with {minst_forskjell:.2f} degrees.")
+print(f"Average deviation in temperature between met.no and time.no was {abs(snitt_forskjell):.2f}.")
+print(f"The largest difference was at {storst_forskjell_tid[0]}.{storst_forskjell_tid[1]:02d}.{storst_forskjell_tid[2]}, {storst_forskjell_tid[3]:02d}:00, with {storst_forskjell:.2f} degrees.")
+print(f"The smallest difference was at {minst_forskjell_tid[0]}.{minst_forskjell_tid[1]:02d}.{minst_forskjell_tid[2]}, {minst_forskjell_tid[3]:02d}:00, with {minst_forskjell:.2f} degrees.")
 
     # Hentar ut tid og temperatur frå listene, og konverterer tid til datetime-objekt for å ha felles x-verdiar:: 
 Sola_tider = [datetime.datetime(d[0], d[1], d[2], d[3], d[4]) for d in Sola_data]
@@ -291,9 +294,9 @@ def plot_graphs():
     ax1.plot(Sauda_tider, Sauda_temps, color="gray", label="Temperature (Sauda)")
     ax1.plot(Sirdal_tider, Sirdal_temps, color="red", label="Temperature (Sirdal)")
     #Plotting av to og to temperaturar, blir mange slices:
-    ax1.plot(Time_temp_drop_tider[:2], Time_temp_drop[:2], color="violet", label='Temperature drop from max til min, time data')
+    ax1.plot(Time_temp_drop_tider[:2], Time_temp_drop[:2], color="violet", label='Temp drop from max one day to min next day, time data')
     ax1.plot(Time_temp_drop_tider[-2:], Time_temp_drop[-2:], color="violet")
-    ax1.plot(Sola_temp_drop_tider[:2], Sola_temp_drop[:2], color="pink", label='Temperature drop from max til min, met data')
+    ax1.plot(Sola_temp_drop_tider[:2], Sola_temp_drop[:2], color="pink", label='Temp drop from max one day to min the next, met data')
     ax1.plot(Sola_temp_drop_tider[2:4], Sola_temp_drop[2:4], color="pink")
     # Formaterer x-aksen:
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%d-%m %H:%M'))
