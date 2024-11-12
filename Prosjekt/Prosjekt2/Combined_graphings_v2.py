@@ -31,10 +31,8 @@ with open("met.csv.txt","r") as sola_temp:
             continue
         
         sola_date_pressure.append((date_time, pressure_sola))
-#print(sola_date_pressure[:2])
 
 date_press = np.array(sola_date_pressure)
-#print(date_press[:2])
 date_met = date_press[:,0]
 pressure = date_press[:,1]
 
@@ -55,10 +53,8 @@ with open("time.csv.txt","r") as met_pressure:
        pressure_met = float(values_met[3].replace(",","."))
        pressure_adj = pressure_met*10
        data_abs_press.append((date_comp, pressure_adj))   
-       #print(date_comp, pressure_adj)
 
 date_abs_press = np.array(data_abs_press)
-#print(date_abs_press[0])
 date_met_2 = date_abs_press[:,0]
 abs_pressure = date_abs_press[:,1]      
 
@@ -79,10 +75,7 @@ with open("time.csv.txt","r") as met_pressure:
         except(ValueError):
                 continue
         data.append((date_comp, barometer_adj)) 
-        #print(date_comp, barometer_adj)
 
-#print(data_abs_press[:1])
-#print(data[:1])
 date_barometer = np.array(data)
 date_time = date_barometer[:,0]
 barometer = date_barometer[:,1]
@@ -102,7 +95,6 @@ Sirdal_data, Sauda_data = cmd.convert_Sirdal_Sauda_data()              #Format: 
 cut_date = Sola_data[0][2]
 cut_hour = Sola_data[0][3]
 
-#print(Time_data[:2], Sola_data[0], Sirdal_data[0], Sauda_data[0])
 kutt = 0 #Vil telle kor mange linjer som skal kuttast.
 for linje in Sola_data:
     if linje[2] < cut_date:
@@ -133,11 +125,6 @@ for linje in Sirdal_data:
         break
 Sirdal_data = Sirdal_data[kutt:]
 
-#print(Time_data[:2])
-#print(Sola_data[:1])
-#print(Sirdal_data[:1])
-#print(Sauda_data[:1])
-#print(len(Sola_data), len(Sirdal_data), len(Sauda_data))
 Time_temp_min = []
 Time_temp_max = []
 Time_coldest = []
@@ -160,7 +147,6 @@ Time_coldest = Time_coldest[1:] #Treng ikkje første døgn sidan max manglar. Sa
 
     #Etablerer ei liste med tid og temperatur for den høgaste og lågaste temperaturen i Time_temp[]:
 Time_temp_drop = []
-#print(Time_warmest)
 
 for i in range((len(Time_warmest))*2): # Gjer klart til plotting
     if i %2 == 0: #Dei høgaste temperaturane er lagra i partal
@@ -191,15 +177,12 @@ Sola_coldest = Sola_coldest[1:] #Treng ikkje første døgn sidan max manglar. Sa
 
     #Etablerer ei liste med tid og temperatur for den høgaste og lågaste temperaturen i Sola_temp[]:
 Sola_temp_drop = []
-#print(Sola_warmest, Sola_coldest)
 
 for i in range((len(Sola_warmest))*2): # Gjer klart til plotting
     if i %2 == 0: #Dei høgaste temperaturane er lagra i partal
         Sola_temp_drop.append(Sola_warmest[(int(i/2))])
     else:
         Sola_temp_drop.append(Sola_coldest[(int((i-1)/2))])
-
-#print(Sola_temp_drop)
 
     #Bereknar gjennomsnittstemperaturen for dei siste 5 minutta i Time_temp[]:
 Time_temp_total = []
@@ -225,14 +208,11 @@ for linje in Time_data:
 for linje in Time_bar_list:
     if linje[4] == 0:
         Time_data_lik_Sola_tider.append(linje)
-#print(Time_bar_list[:3])
-#print(Time_data_lik_Sola_tider[:2], Time_data_lik_Sola_tider[-1:])
 
 Sola_tider_lik_Time_tider = Sola_data
 cut_date = Time_data[0][2]
 cut_hour = Time_data[0][3]
 
-#print(Time_data[:2], Sola_data[0], Sirdal_data[0], Sauda_data[0])
 kutt = 0
 for linje in Sola_data:
     if linje[2] < cut_date:
@@ -242,7 +222,6 @@ for linje in Sola_data:
     else:
         break
 Sola_tider_lik_Time_tider = Sola_tider_lik_Time_tider[kutt + 1:]
-#print(Time_data_lik_Sola_tider[:1], Sola_tider_lik_Time_tider[:1], len(Sola_tider_lik_Time_tider), len(Time_data_lik_Sola_tider))
 
 #Calculating the differences for each item, and printing the results:
 antall = 0
@@ -275,7 +254,6 @@ Sirdal_temps = [linje[5] for linje in Sirdal_data]
 Sirdal_press = [linje[6] for linje in Sirdal_data]
 Sauda_temps = [linje[5] for linje in Sauda_data]
 Sauda_press = [linje[6] for linje in Sauda_data]
-#print(Sauda_data[:1], Sirdal_data[:1])
 Time_tider = [datetime.datetime(linje[0], linje[1], linje[2], linje[3], linje[4]) for linje in Time_data]
 Time_temps = [linje[8] for linje in Time_data]
 Time_temp_avg = [linje[6] for linje in Time_temp_snitt]  
@@ -285,8 +263,7 @@ Time_temp_drop_tider = [datetime.datetime(linje[0], linje[1], linje[2], linje[3]
 Time_temp_drop = [linje[6] for linje in Time_temp_drop]
 Sola_temp_drop_tider = [datetime.datetime(linje[0], linje[1], linje[2], linje[3], linje[4]) for linje in Sola_temp_drop]
 Sola_temp_drop = [linje[5] for linje in Sola_temp_drop]
-#print(Sola_temp_drop_tider)
-#print(Sola_temp_drop)
+
     #Lagar ein funksjon for å plotte data:
 def plot_graphs():
     # Lagar figurvindauget, med to undervindauger, og set storleik.
